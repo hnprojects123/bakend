@@ -5,7 +5,6 @@ const dbConfig = {
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
-  port: 3306, // MySQL default port
   connectTimeout: 20000, // 20 sec timeout (increase to avoid ETIMEDOUT)
   acquireTimeout: 20000, // Extra timeout handling
   multipleStatements: true, // Allow multiple queries
