@@ -1,32 +1,35 @@
 const mysql = require("mysql");
-require("dotenv").config();
 
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
-  multipleStatements: true,
-  connectTimeout: 1000000 // 10 seconds timeout
-});
+const dbConfig = {
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
+};
 
-db.connect((err) => {
-  if (err) {
-    console.error("❌ Database Connection Failed:", err);
-  } else {
-    console.log("✅ Successfully connected to MySQL!");
-  }
-});
+let connection;
 
-// Handle MySQL disconnection
-db.on("error", (err) => {
-  console.error("❌ MySQL Connection Error:", err);
-  if (err.code === "PROTOCOL_CONNECTION_LOST" || err.code === "ECONNRESET") {
-    console.log("🔄 Reconnecting to MySQL...");
-    db.connect();
-  } else {
-    throw err;
-  }
-});
+function handleDisconnect() {
+  connection = mysql.createConnection(dbConfig);
 
-module.exports = db;
+  connection.connect((err) => {
+    if (err) {
+      console.error("Database connection failed:", err);
+      setTimeout(handleDisconnect, 5000); // Retry after 5 seconds
+    } else {
+      console.log("Connected to MySQL database!");
+    }
+  });
+
+  connection.on("error", (err) => {
+    console.error("MySQL error", err);
+    if (err.code === "PROTOCOL_CONNECTION_LOST" || err.fatal) {
+      console.log("Reconnecting...");
+      handleDisconnect(); // Reconnect on lost connection
+    }
+  });
+}
+
+handleDisconnect();
+
+module.exports = connection;
