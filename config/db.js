@@ -1,12 +1,19 @@
 const mysql = require("mysql");
 
+// const dbConfig = {
+//   host: process.env.MYSQL_HOST,
+//   user: process.env.MYSQL_USER,
+//   password: process.env.MYSQL_PASSWORD,
+//   database: process.env.MYSQL_DATABASE,
+// };
 const dbConfig = {
-  host: process.env.MYSQL_HOST,
+  host: process.env.MYSQL_HOST,      // Use GoDaddy MySQL host
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
+  port: 3306,  // MySQL default port
+  connectTimeout: 10000, // 10 sec timeout
 };
-
 let connection;
 
 function handleDisconnect() {
